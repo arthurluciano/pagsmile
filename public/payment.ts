@@ -36,6 +36,11 @@ interface PaymentSubmitData {
   };
   device_info: {
     user_agent: string;
+    browser_language: string;
+    browser_color_depth: string;
+    browser_screen_height: string;
+    browser_screen_width: string;
+    browser_time_zone: string;
   };
 }
 
@@ -180,6 +185,11 @@ const submitPayment = async (
     },
     device_info: {
       user_agent: navigator.userAgent,
+      browser_language: navigator.language,
+      browser_color_depth: String(screen.colorDepth),
+      browser_screen_height: String(screen.height),
+      browser_screen_width: String(screen.width),
+      browser_time_zone: String(new Date().getTimezoneOffset()),
     },
   };
 

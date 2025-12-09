@@ -45,6 +45,11 @@ export interface Address {
 export interface DeviceInfo {
   user_agent: string;
   ip_address?: string;
+  browser_language?: string;
+  browser_color_depth?: string;
+  browser_screen_height?: string;
+  browser_screen_width?: string;
+  browser_time_zone?: string;
 }
 
 export interface CreateOrderRequest {
