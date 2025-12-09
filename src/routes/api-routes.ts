@@ -35,13 +35,25 @@ export const createApiRoutes = (deps: ApiDependencies) => {
 
   const createOrder = async (request: Request): Promise<Response> => {
     try {
-      const body = (await request.json()) as CreatePaymentInput;
+      const body = (await request.json()) as Omit<CreatePaymentInput, "userAgent" | "ipAddress">;
 
       if (!body.amount || !body.customerInfo) {
         return errorResponse("Missing required fields: amount and customerInfo");
       }
 
-      const result = await orderService.createOrder(body);
+      const userAgent = request.headers.get("user-agent") ?? "unknown";
+      const ipAddress =
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        request.headers.get("x-real-ip") ??
+        undefined;
+
+      const input: CreatePaymentInput = {
+        ...body,
+        userAgent,
+        ipAddress,
+      };
+
+      const result = await orderService.createOrder(input);
 
       return jsonResponse({
         success: true,

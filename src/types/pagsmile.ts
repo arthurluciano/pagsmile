@@ -42,6 +42,11 @@ export interface Address {
   street_number: string;
 }
 
+export interface DeviceInfo {
+  user_agent: string;
+  ip_address?: string;
+}
+
 export interface CreateOrderRequest {
   app_id: string;
   out_trade_no: string;
@@ -59,6 +64,7 @@ export interface CreateOrderRequest {
   buyer_id: string;
   customer: Customer;
   address: Address;
+  device_info: DeviceInfo;
 }
 
 export interface CreateOrderResponse {
@@ -115,6 +121,8 @@ export interface CustomerInfo {
 export interface CreatePaymentInput {
   amount: string;
   customerInfo: CustomerInfo;
+  userAgent: string;
+  ipAddress?: string;
 }
 
 export interface PagsmileConfig {
