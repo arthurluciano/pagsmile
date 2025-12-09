@@ -34,6 +34,9 @@ interface PaymentSubmitData {
     city: string;
     street: string;
   };
+  device_info: {
+    user_agent: string;
+  };
 }
 
 interface PaymentResult {
@@ -174,6 +177,9 @@ const submitPayment = async (
       state: customerInfo.state,
       city: customerInfo.city,
       street: customerInfo.address,
+    },
+    device_info: {
+      user_agent: navigator.userAgent,
     },
   };
 
