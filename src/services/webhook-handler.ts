@@ -23,6 +23,8 @@ export interface WebhookHandlerOptions {
 }
 
 const validateWebhookPayload = (payload: WebhookPayload): void => {
+  console.log("🔍 Validando payload do webhook...");
+  
   const errors: string[] = [];
 
   if (!payload.trade_no) {
@@ -38,8 +40,11 @@ const validateWebhookPayload = (payload: WebhookPayload): void => {
   }
 
   if (errors.length > 0) {
+    console.log("❌ Validação do webhook falhou:", errors);
     throw new Error(`Invalid webhook payload: ${errors.join(", ")}`);
   }
+  
+  console.log("✅ Validação do webhook OK");
 };
 
 const mapPayloadToEvent = (payload: WebhookPayload): WebhookEvent => ({
@@ -61,24 +66,41 @@ export const createWebhookHandler = (options: WebhookHandlerOptions = {}): Webho
 
   return {
     processWebhook: async (payload: WebhookPayload): Promise<WebhookEvent> => {
+      console.log("🔔 WebhookHandler.processWebhook iniciado");
+      
       validateWebhookPayload(payload);
 
       const event = mapPayloadToEvent(payload);
+      
+      console.log("📊 Evento mapeado:", {
+        tradeNo: event.tradeNo,
+        outTradeNo: event.outTradeNo,
+        status: event.status,
+        amount: event.amount,
+        currency: event.currency,
+        method: event.method,
+      });
 
       if (event.status === "SUCCESS") {
+        console.log("✅ Status: SUCCESS - Executando callback de sucesso...");
         await onSuccessCallback(event);
       } else if (event.status === "FAILED" || event.status === "CANCELLED") {
+        console.log(`❌ Status: ${event.status} - Executando callback de falha...`);
         await onFailedCallback(event);
+      } else {
+        console.log(`ℹ️  Status: ${event.status} - Nenhuma ação específica`);
       }
 
       return event;
     },
 
     onPaymentSuccess: async (event: WebhookEvent): Promise<void> => {
+      console.log("✅ onPaymentSuccess chamado para:", event.outTradeNo);
       await onSuccessCallback(event);
     },
 
     onPaymentFailed: async (event: WebhookEvent): Promise<void> => {
+      console.log("❌ onPaymentFailed chamado para:", event.outTradeNo);
       await onFailedCallback(event);
     },
   };

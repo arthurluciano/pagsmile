@@ -6,19 +6,58 @@ import { createTransactionService } from "./src/services/transaction-service.ts"
 import { createWebhookHandler } from "./src/services/webhook-handler.ts";
 import { createApiRoutes } from "./src/routes/api-routes.ts";
 
+console.log("========================================");
+console.log("🚀 Inicializando servidor Pagsmile...");
+console.log("========================================");
+
 const config = loadPagsmileConfig();
+console.log("✅ Configuração carregada:", {
+  appId: config.appId,
+  environment: config.environment,
+  notifyUrl: config.notifyUrl,
+  returnUrl: config.returnUrl,
+});
+
 const pagsmileClient = createPagsmileClient(config);
+console.log("✅ Cliente Pagsmile criado");
 
 const orderService = createOrderService(pagsmileClient, config);
+console.log("✅ Order Service criado");
+
 const transactionService = createTransactionService(pagsmileClient, config);
+console.log("✅ Transaction Service criado");
+
 const webhookHandler = createWebhookHandler({
   onSuccess: async (event) => {
-    console.log(`Payment SUCCESS: Order ${event.outTradeNo}, Amount: ${event.amount} ${event.currency}`);
+    console.log("========================================");
+    console.log("✅ PAGAMENTO APROVADO!");
+    console.log("========================================");
+    console.log("Dados do pagamento:", {
+      tradeNo: event.tradeNo,
+      outTradeNo: event.outTradeNo,
+      amount: event.amount,
+      currency: event.currency,
+      method: event.method,
+      status: event.status,
+    });
+    console.log("========================================");
   },
   onFailed: async (event) => {
-    console.log(`Payment FAILED: Order ${event.outTradeNo}, Status: ${event.status}`);
+    console.log("========================================");
+    console.log("❌ PAGAMENTO FALHOU!");
+    console.log("========================================");
+    console.log("Dados do pagamento:", {
+      tradeNo: event.tradeNo,
+      outTradeNo: event.outTradeNo,
+      amount: event.amount,
+      currency: event.currency,
+      method: event.method,
+      status: event.status,
+    });
+    console.log("========================================");
   },
 });
+console.log("✅ Webhook Handler criado");
 
 const apiRoutes = createApiRoutes({
   config,
@@ -68,5 +107,13 @@ const server = Bun.serve({
   },
 });
 
-console.log(`Server running at http://localhost:${server.port}`);
-console.log(`Environment: ${config.environment}`);
+console.log("========================================");
+console.log(`✅ Server rodando em http://localhost:${server.port}`);
+console.log(`📍 Ambiente: ${config.environment}`);
+console.log("========================================");
+console.log("Endpoints disponíveis:");
+console.log("  GET  /api/config");
+console.log("  POST /api/create-order");
+console.log("  GET  /api/query-transaction/:tradeNo");
+console.log("  POST /api/webhook/payment");
+console.log("========================================");

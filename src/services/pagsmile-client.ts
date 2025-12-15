@@ -21,6 +21,16 @@ export const createPagsmileClient = (config: PagsmileConfig): PagsmileHttpClient
   ): Promise<TResponse> => {
     const url = `${PAGSMILE_API_BASE_URL}${endpoint}`;
 
+    console.log("🔗 PagsmileClient fazendo requisição:");
+    console.log("  URL:", url);
+    console.log("  Method:", options.method);
+    console.log("  Headers:", {
+      "Content-Type": "application/json",
+      Authorization: authHeader.substring(0, 20) + "...",
+    });
+
+    const startTime = Date.now();
+    
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -30,12 +40,22 @@ export const createPagsmileClient = (config: PagsmileConfig): PagsmileHttpClient
       },
     });
 
+    const duration = Date.now() - startTime;
+    console.log(`⏱️  Resposta recebida em ${duration}ms`);
+    console.log("  Status:", response.status, response.statusText);
+
     if (!response.ok) {
       const errorBody = await response.text();
+      console.error("❌ Erro na resposta da API:");
+      console.error("  Status:", response.status);
+      console.error("  Body:", errorBody);
       throw new Error(`Pagsmile API error: ${response.status} - ${errorBody}`);
     }
 
-    return response.json() as Promise<TResponse>;
+    const jsonResponse = await response.json() as TResponse;
+    console.log("✅ Resposta OK da API Pagsmile");
+    
+    return jsonResponse;
   };
 
   return {

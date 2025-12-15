@@ -27,7 +27,11 @@ export const createTransactionService = (
   config: PagsmileConfig
 ): TransactionService => ({
   queryTransaction: async (tradeNo: string): Promise<QueryTransactionResponse> => {
+    console.log("🔍 TransactionService.queryTransaction iniciado");
+    console.log("  Trade No:", tradeNo);
+    
     if (!tradeNo || tradeNo.trim().length === 0) {
+      console.log("❌ Trade number não fornecido");
       throw new Error("Trade number is required");
     }
 
@@ -37,15 +41,22 @@ export const createTransactionService = (
       trade_no: tradeNo,
     };
 
+    console.log("📋 Query Request:", JSON.stringify(queryRequest, null, 2));
+    console.log("🌐 Consultando transação na Pagsmile API...");
+
     const response = await client.post<QueryRequest, QueryTransactionResponse>(
       "/trade/query",
       queryRequest
     );
 
+    console.log("📥 Resposta da query:", JSON.stringify(response, null, 2));
+
     if (response.code !== "10000") {
+      console.log(`❌ Erro da Pagsmile: ${response.code} - ${response.msg}`);
       throw new Error(`Pagsmile error: ${response.code} - ${response.msg}`);
     }
 
+    console.log("✅ Transação consultada com sucesso");
     return response;
   },
 });

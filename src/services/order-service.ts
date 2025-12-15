@@ -78,6 +78,8 @@ const buildOrderRequest = (
 };
 
 const validateCustomerInfo = (customerInfo: CustomerInfo): void => {
+  console.log("🔍 Validando informações do cliente...");
+  
   const errors: string[] = [];
 
   if (!customerInfo.name || customerInfo.name.trim().length < 3) {
@@ -113,8 +115,11 @@ const validateCustomerInfo = (customerInfo: CustomerInfo): void => {
   }
 
   if (errors.length > 0) {
+    console.log("❌ Validação falhou:", errors);
     throw new Error(`Validation errors: ${errors.join(", ")}`);
   }
+  
+  console.log("✅ Validação do cliente OK");
 };
 
 export const createOrderService = (
@@ -122,18 +127,38 @@ export const createOrderService = (
   config: PagsmileConfig
 ): OrderService => ({
   createOrder: async (input: CreatePaymentInput): Promise<CreateOrderResponse> => {
+    console.log("💳 OrderService.createOrder iniciado");
+    
     validateCustomerInfo(input.customerInfo);
 
     const orderRequest = buildOrderRequest(input, config);
+    const orderId = orderRequest.out_trade_no;
+    
+    console.log("📋 Order Request gerado:", {
+      out_trade_no: orderId,
+      amount: orderRequest.order_amount,
+      currency: orderRequest.order_currency,
+      method: orderRequest.method,
+      customer_email: orderRequest.customer.email,
+      customer_cpf: orderRequest.customer.identify.number,
+    });
+    
+    console.log("🌐 Enviando requisição para Pagsmile API...");
+    console.log("📤 Request completo:", JSON.stringify(orderRequest, null, 2));
+    
     const response = await client.post<CreateOrderRequest, CreateOrderResponse>(
       "/trade/create",
       orderRequest
     );
 
+    console.log("📥 Resposta da Pagsmile API:", JSON.stringify(response, null, 2));
+
     if (response.code !== "10000") {
+      console.log(`❌ Erro da Pagsmile: ${response.code} - ${response.msg}`);
       throw new Error(`Pagsmile error: ${response.code} - ${response.msg}`);
     }
 
+    console.log("✅ Pedido criado com sucesso na Pagsmile");
     return response;
   },
 });
