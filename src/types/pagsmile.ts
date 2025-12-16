@@ -69,6 +69,7 @@ export interface CreateOrderRequest {
   buyer_id: string;
   customer: Customer;
   address: Address;
+  device_info?: DeviceInfo;
 }
 
 export interface CreateOrderResponse {
@@ -125,6 +126,8 @@ export interface CustomerInfo {
 export interface CreatePaymentInput {
   amount: string;
   customerInfo: CustomerInfo;
+  userAgent?: string;
+  ipAddress?: string;
 }
 
 export interface PagsmileConfig {

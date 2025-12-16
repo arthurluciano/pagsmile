@@ -49,7 +49,18 @@ export const createApiRoutes = (deps: ApiDependencies) => {
     try {
       const input = (await request.json()) as CreatePaymentInput;
       
+      // Captura o IP do cliente
+      const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() 
+        || request.headers.get("x-real-ip")
+        || "unknown";
+      
+      // Adiciona o IP ao input se não foi fornecido
+      if (!input.ipAddress && ipAddress !== "unknown") {
+        input.ipAddress = ipAddress;
+      }
+      
       console.log("📦 Dados recebidos:", JSON.stringify(input, null, 2));
+      console.log("🌐 IP do cliente:", ipAddress);
 
       if (!input.amount || !input.customerInfo) {
         console.log("❌ Validação falhou: Campos obrigatórios ausentes");

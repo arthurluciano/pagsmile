@@ -37,9 +37,9 @@ const buildOrderRequest = (
   input: CreatePaymentInput,
   config: PagsmileConfig
 ): CreateOrderRequest => {
-  const { amount, customerInfo } = input;
+  const { amount, customerInfo, userAgent, ipAddress } = input;
 
-  return {
+  const request: CreateOrderRequest = {
     app_id: config.appId,
     out_trade_no: generateOrderId(),
     method: "CreditCard",
@@ -71,6 +71,22 @@ const buildOrderRequest = (
       street_number: extractStreetNumber(customerInfo.address),
     },
   };
+
+  // Adiciona device_info se userAgent estiver presente
+  if (userAgent) {
+    request.device_info = {
+      user_agent: userAgent,
+      ip_address: ipAddress,
+    };
+    console.log("🔒 Device info incluído para validação 3DS/antifraude:", {
+      user_agent: userAgent.substring(0, 50) + "...",
+      ip_address: ipAddress || "não fornecido",
+    });
+  } else {
+    console.log("⚠️ ATENÇÃO: device_info não foi incluído (userAgent ausente)");
+  }
+
+  return request;
 };
 
 const validateCustomerInfo = (customerInfo: CustomerInfo): void => {
