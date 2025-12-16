@@ -37,7 +37,17 @@ const buildOrderRequest = (
   input: CreatePaymentInput,
   config: PagsmileConfig
 ): CreateOrderRequest => {
-  const { amount, customerInfo, userAgent, ipAddress } = input;
+  const { 
+    amount, 
+    customerInfo, 
+    userAgent, 
+    ipAddress,
+    browserLanguage,
+    browserColorDepth,
+    browserScreenHeight,
+    browserScreenWidth,
+    browserTimeZone,
+  } = input;
 
   const request: CreateOrderRequest = {
     app_id: config.appId,
@@ -77,10 +87,19 @@ const buildOrderRequest = (
     request.device_info = {
       user_agent: userAgent,
       ip_address: ipAddress,
+      browser_language: browserLanguage,
+      browser_color_depth: browserColorDepth,
+      browser_screen_height: browserScreenHeight,
+      browser_screen_width: browserScreenWidth,
+      browser_time_zone: browserTimeZone,
     };
-    console.log("🔒 Device info incluído para validação 3DS/antifraude:", {
+    console.log("🔒 Device info COMPLETO incluído para validação 3DS/antifraude:", {
       user_agent: userAgent.substring(0, 50) + "...",
       ip_address: ipAddress || "não fornecido",
+      browser_language: browserLanguage,
+      browser_color_depth: browserColorDepth,
+      screen_resolution: `${browserScreenWidth}x${browserScreenHeight}`,
+      time_zone: browserTimeZone,
     });
   } else {
     console.log("⚠️ ATENÇÃO: device_info não foi incluído (userAgent ausente)");

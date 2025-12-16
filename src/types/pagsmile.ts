@@ -128,6 +128,11 @@ export interface CreatePaymentInput {
   customerInfo: CustomerInfo;
   userAgent?: string;
   ipAddress?: string;
+  browserLanguage?: string;
+  browserColorDepth?: string;
+  browserScreenHeight?: string;
+  browserScreenWidth?: string;
+  browserTimeZone?: string;
 }
 
 export interface PagsmileConfig {

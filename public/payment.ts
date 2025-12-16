@@ -127,17 +127,28 @@ const fetchSdkConfig = async (): Promise<SdkConfig> => {
   return response.json() as Promise<SdkConfig>;
 };
 
+const getDeviceInfo = () => ({
+  userAgent: navigator.userAgent,
+  browserLanguage: navigator.language,
+  browserColorDepth: screen.colorDepth.toString(),
+  browserScreenHeight: screen.height.toString(),
+  browserScreenWidth: screen.width.toString(),
+  browserTimeZone: new Date().getTimezoneOffset().toString(),
+});
+
 const createBackendOrder = async (
   amount: string,
   customerInfo: CustomerInfo
 ): Promise<CreateOrderResponse> => {
+  const deviceInfo = getDeviceInfo();
+  
   const response = await fetch("/api/create-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ 
       amount, 
       customerInfo,
-      userAgent: navigator.userAgent,
+      ...deviceInfo,
     }),
   });
 
