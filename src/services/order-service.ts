@@ -37,7 +37,7 @@ const buildOrderRequest = (
   input: CreatePaymentInput,
   config: PagsmileConfig
 ): CreateOrderRequest => {
-  const { amount, customerInfo, userAgent, ipAddress } = input;
+  const { amount, customerInfo } = input;
 
   return {
     app_id: config.appId,
@@ -69,10 +69,6 @@ const buildOrderRequest = (
       city: customerInfo.city,
       street_name: customerInfo.address,
       street_number: extractStreetNumber(customerInfo.address),
-    },
-    device_info: {
-      user_agent: userAgent,
-      ip_address: ipAddress,
     },
   };
 };

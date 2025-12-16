@@ -47,28 +47,14 @@ export const createApiRoutes = (deps: ApiDependencies) => {
     console.log("========================================");
     
     try {
-      const body = (await request.json()) as Omit<CreatePaymentInput, "userAgent" | "ipAddress">;
+      const input = (await request.json()) as CreatePaymentInput;
       
-      console.log("📦 Dados recebidos:", JSON.stringify(body, null, 2));
+      console.log("📦 Dados recebidos:", JSON.stringify(input, null, 2));
 
-      if (!body.amount || !body.customerInfo) {
+      if (!input.amount || !input.customerInfo) {
         console.log("❌ Validação falhou: Campos obrigatórios ausentes");
         return errorResponse("Missing required fields: amount and customerInfo");
       }
-
-      const userAgent = request.headers.get("user-agent") ?? "unknown";
-      const ipAddress =
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-        request.headers.get("x-real-ip") ??
-        undefined;
-
-      console.log("🌐 Informações de requisição:", { userAgent, ipAddress });
-
-      const input: CreatePaymentInput = {
-        ...body,
-        userAgent,
-        ipAddress,
-      };
 
       console.log("⏳ Criando pedido no Pagsmile...");
       const startTime = Date.now();
