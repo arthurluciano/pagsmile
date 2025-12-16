@@ -87,11 +87,21 @@ const buildOrderRequest = (
     request.device_info = {
       user_agent: userAgent,
       ip_address: ipAddress,
+      // Formato Pagsmile (browser_*)
       browser_language: browserLanguage,
       browser_color_depth: browserColorDepth,
       browser_screen_height: browserScreenHeight,
       browser_screen_width: browserScreenWidth,
       browser_time_zone: browserTimeZone,
+      // Formato A55 (http_browser_*) - para compatibilidade
+      http_browser_language: browserLanguage,
+      http_browser_color_depth: browserColorDepth,
+      http_browser_screen_height: browserScreenHeight,
+      http_browser_screen_width: browserScreenWidth,
+      http_browser_time_difference: browserTimeZone,
+      http_accept_content: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      http_browser_java_enabled: false,
+      http_browser_javascript_enabled: true,
     };
     console.log("🔒 Device info COMPLETO incluído para validação 3DS/antifraude:", {
       user_agent: userAgent.substring(0, 50) + "...",
@@ -100,6 +110,7 @@ const buildOrderRequest = (
       browser_color_depth: browserColorDepth,
       screen_resolution: `${browserScreenWidth}x${browserScreenHeight}`,
       time_zone: browserTimeZone,
+      formats: "browser_* + http_browser_* (compatibilidade Pagsmile + A55)",
     });
   } else {
     console.log("⚠️ ATENÇÃO: device_info não foi incluído (userAgent ausente)");

@@ -50,6 +50,15 @@ export interface DeviceInfo {
   browser_screen_height?: string;
   browser_screen_width?: string;
   browser_time_zone?: string;
+  // Campos adicionais para compatibilidade com A55/3DS
+  http_browser_language?: string;
+  http_browser_color_depth?: string;
+  http_browser_screen_height?: string;
+  http_browser_screen_width?: string;
+  http_browser_time_difference?: string;
+  http_accept_content?: string;
+  http_browser_java_enabled?: boolean;
+  http_browser_javascript_enabled?: boolean;
 }
 
 export interface CreateOrderRequest {
